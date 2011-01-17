@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-RES=$(jps | grep "$@" | awk '{print $1}')
+RES=$(jps | grep " $@$" | awk '{print $1}')
 if [ -z "$RES" ]; then
   exit 1
 else
