@@ -54,3 +54,13 @@ Usage:
 
     $ hk-jstack $(hk-jgrep NameNode)
 
+### hk-interesting-threads
+
+Filters a jstack of a Hadoop daemon to cut out "uninteresting" threads.
+Uninteresting threads are things like threads in threadpools that are currently
+just waiting for something to do, or IPC handlers that have no call to
+process.
+
+Usage:
+
+    $ hk-jstack $(hk-jgrep NameNode) | hk-interesting-threads
