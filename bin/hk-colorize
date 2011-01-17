@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+# Copyright (c) 2011, Cloudera inc
+
+import sys
+import re
+from optparse import OptionParser
+
+COLORS = {
+  'bold': '\033[1m',
+  'italic': '\033[3m',
+  'underline': '\033[4m',
+  'inverse': '\033[7m',
+  
+  'red': '\033[31m',
+  'green': '\033[32m',
+  'yellow': '\033[33m',
+  'blue': "\033[34m",
+  'purple': "\033[35m",
+  'lightblue': "\033[36m",
+  'white': "\033[37m",
+
+  'redbg': '\033[41m',
+  'greenbg': '\033[42m',
+  'yellowbg': '\033[43m',
+  'bluebg': "\033[44m",
+  'purplebg': "\033[45m",
+  'lightbluebg': "\033[46m",
+  'whitebg': "\033[47m",
+
+  'end':  "\033[0m"
+}
+
+
+parser = OptionParser()
+parser.add_option("-o", "--only-colored-lines", dest="only_colored", action="store_true")
+parser.usage = "%s <color hash>"
+
+options, args = parser.parse_args()
+
+if len(args) != 1:
+  options.print_help(sys.stderr)
+  sys.exit(1)
+
+colors = eval(args[0])
+
+def make_repl(color):
+  parts = color.split(",")
+  return ("".join(COLORS[part.strip()] for part in parts) +
+      r'\g<0>' + COLORS['end'])
+
+pairs = [(re.compile(regex), make_repl(colorspec))
+           for regex,colorspec in colors.iteritems()]
+
+
+for line in sys.stdin.xreadlines():
+  made_sub = 0
+  for r, repl in pairs:
+    line,count = re.subn(r, repl, line)
+    made_sub += count
+
+  if not options.only_colored or made_sub > 0:
+    print line,

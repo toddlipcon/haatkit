@@ -1,0 +1,17 @@
+#!/bin/bash
+# Copyright (c) 2011, Cloudera, inc.
+
+if [ $# -ne 1 ]; then
+  echo "usage: $0 <java process name>"
+  echo
+  echo e.g.: jgrep HRegionServer
+  exit 1
+fi
+
+RES=$(jps | grep "$@" | awk '{print $1}')
+if [ -z "$RES" ]; then
+  exit 1
+else
+  echo "$RES"
+fi
+

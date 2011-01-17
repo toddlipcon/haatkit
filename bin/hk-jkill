@@ -1,0 +1,25 @@
+#!/bin/bash
+# Copyright (c) 2011, Cloudera, inc.
+
+BINDIR=$(dirname $BASH_SOURCE)
+
+if [[ $1 == -* ]]; then
+  SIGNAL=$1
+  shift
+fi
+
+if [ $# -ne 1 ]; then
+  echo "usage: $0 [-SIGNAL] <java process name>"
+  echo
+  echo e.g.: jkill -9 HRegionServer
+  exit 1
+fi
+
+set -e
+PIDS=$($BINDIR/hk-jgrep $1)
+if [ -z "$PIDS" ]; then
+  echo pid for $@ not found
+  exit 1
+else
+  kill $SIGNAL $PIDS
+fi
