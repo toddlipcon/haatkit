@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+# Copyright (c) 2011, Cloudera inc
+
+import sys
+import re
+
+STACK_LINE = re.compile(r"at (.+)")
+LOCK_HELD = re.compile(r"locked <(0x[0-9a-f]+)> \(a (.+)\)")
+LOCK_WAIT = re.compile(r"waiting to lock <(0x[0-9a-f]+)> \(a (.+)\)")
+
+HELD_AT = {}
+TYPES = {}
+WAIT_COUNTS = {}
+
+for l in sys.stdin.xreadlines():
+  m = STACK_LINE.search(l)
+  if m:
+    last_stack = m.group(1)
+    continue
+
+  m = LOCK_HELD.search(l)
+  if m:
+    lid, type = m.groups()
+    TYPES[lid] = type
+    HELD_AT[lid] = last_stack
+    continue
+ 
+  m = LOCK_WAIT.search(l)
+  if m:
+    lid, type = m.groups()
+    TYPES[lid] = type
+    if lid in WAIT_COUNTS:
+      WAIT_COUNTS[lid] += 1
+    else:
+      WAIT_COUNTS[lid] = 1
+    continue
+
+for lid, count in WAIT_COUNTS.iteritems():
+  print "%d waiting on %s (%s)" % (count, lid, TYPES[lid])
+  print "  held at %s" % (HELD_AT[lid])

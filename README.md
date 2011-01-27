@@ -64,3 +64,14 @@ process.
 Usage:
 
     $ hk-jstack $(hk-jgrep NameNode) | hk-interesting-threads
+
+### hk-lock-contention
+
+Takes in a jstack and outputs a summary of which threads are waiting on which
+locks, and where those locks are held.
+
+Usage:
+
+    $ hk-jstack $(hk-jgrep HRegionServer) | hk-lock-contention
+    1 waiting on 0x000000060bdbe6f0 (java.util.HashMap)
+      held at org.apache.hadoop.hbase.regionserver.HRegionServer.metrics(HRegionServer.java:1164)
