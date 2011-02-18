@@ -25,7 +25,7 @@ Tools currently included
 
 Colorizes certain regular expressions inside a log. For example:
 
-    $ hk-colorize "r{'WARN|FATAL|Exception': 'red', r'blk_\d+': 'yellow,bold'}"
+    $ hk-colorize "{r'WARN|FATAL|Exception': 'red', r'blk_\d+': 'yellow,bold'}"
 
 If you would like to page through the colorized output, 'less -R' is recommended.
 
