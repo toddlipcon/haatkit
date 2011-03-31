@@ -24,6 +24,14 @@ determine_exe() {
     echo $argv0
     return
   fi
+
+  # If that failed, try again readlink with sudo
+  res=$(sudo readlink -f /proc/$PID/exe)
+  if [ "$?" -eq 0 ]; then
+    echo $res
+    return
+  fi
+
   return -1
 }
 
