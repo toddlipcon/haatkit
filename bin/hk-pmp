@@ -1,0 +1,18 @@
+#!/bin/bash
+
+BIN=$(dirname $BASH_SOURCE)
+
+
+PID=$($BIN/hk-jgrep $1)
+if [ $? != 0 ]; then
+  echo couldnt find pid for $1
+  exit 1
+fi
+while true ; do
+  date
+  $BIN/hk-jstack $PID > /tmp/hk-pmp-$$.txt.new
+  mv /tmp/hk-pmp-$$.txt.new /tmp/hk-pmp-$$.txt
+  cat /tmp/hk-pmp-$$.txt | $BIN/hk-lock-contention
+  # cat /tmp/hk-pmp-$$.txt | grep 'waiting to lock' | sort | uniq -c
+  perl -e 'sleep(0.5);'
+done
