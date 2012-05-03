@@ -3,7 +3,11 @@
 BIN=$(dirname $BASH_SOURCE)
 
 
-PID=$($BIN/hk-jgrep $1)
+if [[ "$1" == [0-9]* ]]; then
+  PID=$1
+else
+  PID=$($BIN/hk-jgrep $1)
+fi
 if [ $? != 0 ]; then
   echo couldnt find pid for $1
   exit 1
