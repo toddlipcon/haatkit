@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+#
+# Script for tracing what happens to a given file.
+# Looks for allocateBlock calls for this file, and then any
+# includes any subsequent messages that mention the file
+# or any of those blocks.
+
+my $FILE = shift @ARGV;
+die "usage: $0 <hdfs path> <NN logs> ..." unless $FILE =~ m#^/.*#;
+
+my %blocks;
+my $block_re = qr/xxxxxxxxxxxxxx/;
+
+my $extra_re;
+if (exists $ENV{EXTRA_RE}) {
+  $extra_re = qr/$ENV{EXTRA_RE}/;
+} else {
+  $extra_re = qr/xxxxxxxxxxxxx/;
+}
+
+while (<>) {
+  if (/allocateBlock: $FILE\..* (blk_-?\d+)_/) {
+    $blocks{$1} = 1;
+    my $re_str = join('|', keys %blocks);
+    $block_re = qr/$re_str/;
+  }
+
+  if (/$block_re/) {
+    print;
+  } elsif (index($_, $FILE) >= 0 || /$extra_re/) {
+    print;
+  }
+}
